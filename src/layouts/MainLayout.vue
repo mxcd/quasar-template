@@ -3,6 +3,7 @@
     <q-header elevated>
       <q-toolbar>
         <q-btn
+          v-if="authStore.isAuthenticated"
           flat
           dense
           round
@@ -12,30 +13,91 @@
         />
 
         <q-toolbar-title>
-          Quasar App
+          Template Application
         </q-toolbar-title>
 
-        <div>Quasar v{{ $q.version }}</div>
+        <!-- User section when authenticated -->
+        <div v-if="authStore.isAuthenticated" class="row items-center q-gutter-sm">
+          <q-chip
+            square
+            color="primary"
+            text-color="white"
+            icon="person"
+            clickable
+            @click="navigateToOwnProfile"
+          >
+            {{ authStore.displayName }}
+            <q-tooltip>View profile</q-tooltip>
+          </q-chip>
+
+          <q-btn
+            flat
+            round
+            dense
+            icon="logout"
+            @click="handleLogout"
+            :loading="authStore.loading"
+          >
+            <q-tooltip>Logout</q-tooltip>
+          </q-btn>
+        </div>
+
+        <!-- Login/Register links when not authenticated -->
+        <div v-else class="row items-center q-gutter-sm">
+          <q-btn
+            flat
+            label="Login"
+            icon="login"
+            to="/login"
+          />
+          <q-btn
+            flat
+            label="Register"
+            icon="person_add"
+            to="/register"
+          />
+        </div>
       </q-toolbar>
     </q-header>
 
     <q-drawer
+      v-if="authStore.isAuthenticated"
       v-model="leftDrawerOpen"
       show-if-above
       bordered
     >
       <q-list>
-        <q-item-label
-          header
+        <q-item
+          clickable
+          to="/"
+          exact
         >
-          Essential Links
-        </q-item-label>
+          <q-item-section avatar>
+            <q-icon name="home" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Home</q-item-label>
+          </q-item-section>
+        </q-item>
 
-        <EssentialLink
-          v-for="link in linksList"
-          :key="link.title"
-          v-bind="link"
-        />
+        <template v-if="authStore.isAdmin">
+          <q-item-label header>
+            Administration
+          </q-item-label>
+
+          <q-item
+            clickable
+            to="/users"
+            exact
+          >
+            <q-item-section avatar>
+              <q-icon name="people" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>Users</q-item-label>
+            </q-item-section>
+          </q-item>
+        </template>
       </q-list>
     </q-drawer>
 
@@ -47,56 +109,27 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import EssentialLink, { type EssentialLinkProps } from 'components/EssentialLink.vue';
+import { useRouter } from 'vue-router';
+import { useAuthStore } from 'src/stores/auth.store';
 
-const linksList: EssentialLinkProps[] = [
-  {
-    title: 'Docs',
-    caption: 'quasar.dev',
-    icon: 'school',
-    link: 'https://quasar.dev'
-  },
-  {
-    title: 'Github',
-    caption: 'github.com/quasarframework',
-    icon: 'code',
-    link: 'https://github.com/quasarframework'
-  },
-  {
-    title: 'Discord Chat Channel',
-    caption: 'chat.quasar.dev',
-    icon: 'chat',
-    link: 'https://chat.quasar.dev'
-  },
-  {
-    title: 'Forum',
-    caption: 'forum.quasar.dev',
-    icon: 'record_voice_over',
-    link: 'https://forum.quasar.dev'
-  },
-  {
-    title: 'Twitter',
-    caption: '@quasarframework',
-    icon: 'rss_feed',
-    link: 'https://twitter.quasar.dev'
-  },
-  {
-    title: 'Facebook',
-    caption: '@QuasarFramework',
-    icon: 'public',
-    link: 'https://facebook.quasar.dev'
-  },
-  {
-    title: 'Quasar Awesome',
-    caption: 'Community Quasar projects',
-    icon: 'favorite',
-    link: 'https://awesome.quasar.dev'
-  }
-];
-
+const router = useRouter();
+const authStore = useAuthStore();
 const leftDrawerOpen = ref(false);
 
-function toggleLeftDrawer () {
+function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value;
+}
+
+async function handleLogout() {
+  const result = await authStore.logout();
+  if (result.success) {
+    router.push('/login');
+  }
+}
+
+function navigateToOwnProfile() {
+  if (authStore.user?.id) {
+    router.push(`/users/${authStore.user.id}`);
+  }
 }
 </script>

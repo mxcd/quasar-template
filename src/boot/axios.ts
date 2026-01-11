@@ -14,7 +14,25 @@ declare module 'vue' {
 // good idea to move this instance creation inside of the
 // "export default () => {}" function below (which runs individually
 // for each client)
-const api = axios.create({ baseURL: 'https://api.example.com' });
+const api = axios.create({
+  baseURL: '/api/v1',
+  withCredentials: true, // Send cookies with requests for session-based auth
+});
+
+// Add response interceptor for handling auth errors
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Unauthorized - session expired or invalid
+      console.error('Authentication required');
+    } else if (error.response?.status === 403) {
+      // Forbidden
+      console.error('Access denied');
+    }
+    return Promise.reject(error);
+  }
+);
 
 export default defineBoot(({ app }) => {
   // for use inside Vue files (Options API) through this.$axios and this.$api

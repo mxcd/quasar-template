@@ -13,9 +13,11 @@
     "postinstall": "quasar prepare"
   },
   "dependencies": {
-    "axios": "^1.2.1",
-    "pinia": "^3.0.1",
     "@quasar/extras": "^1.16.4",
+    "@vueuse/core": "^14.1.0",
+    "axios": "^1.2.1",
+    "mitt": "^3.0.1",
+    "pinia": "^3.0.1",
     "quasar": "^2.16.0",
     "vue": "^3.5.22",
     "vue-router": "^4.0.12"
