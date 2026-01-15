@@ -29,7 +29,7 @@ async function list(params: UsersListParams = {}): Promise<ListResponse<User>> {
   return response.data;
 }
 
-async function id(id: string): Promise<User> {
+async function single(id: string): Promise<User> {
   const response = await api.get<User>(`/users/${id}`);
   return response.data;
 }
@@ -50,7 +50,7 @@ async function remove(id: string): Promise<void> {
 
 export default {
   list,
-  id,
+  single,
   create,
   update,
   remove,

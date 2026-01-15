@@ -192,7 +192,7 @@ async function load() {
 
   loading.value = true;
   try {
-    user.value = await users.id(userId);
+    user.value = await users.single(userId);
   } catch (error) {
     $q.notify({
       type: 'negative',

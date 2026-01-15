@@ -114,7 +114,7 @@ async function load() {
   try {
     loading.value = true;
     const result = await users.list({
-      limit: pagination.value.page * pagination.value.rowsPerPage,
+      limit: pagination.value.rowsPerPage,
       offset: (pagination.value.page - 1) * pagination.value.rowsPerPage,
       sort: pagination.value.sortBy,
       order: pagination.value.descending ? 'desc' : 'asc',

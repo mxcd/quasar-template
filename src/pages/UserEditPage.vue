@@ -143,7 +143,7 @@ async function load() {
 
   pageLoading.value = true;
   try {
-    user.value = await users.id(userId);
+    user.value = await users.single(userId);
     form.value.username = user.value.username;
     form.value.name = user.value.name;
     form.value.email = user.value.email || '';
